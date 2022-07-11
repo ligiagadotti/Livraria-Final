@@ -1,25 +1,26 @@
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
-      autores: [
-        {
-          nomeautor: "J.K. Rowling",
-        },
-      ],
+      autores: [],
       novo_autor: "",
     };
   },
+  async created() {
+    const autores = await axios.get("http://localhost:4000/autores");
+    this.autores = autores.data;
+  },
   methods: {
-    salvar() {
-      if (this.novo_autor !== "") {
-        this.autores.push({
-          nomeautor: this.novo_autor,
-        });
-        this.novo_autor = "";
-      }
+    async salvar() {
+      const time = {
+        nome: this.novo_autor,
+      };
+      const autor_criado = await axios.post("http://localhost:4000/autores", time);
+      this.autores.push(autor_criado.data);
     },
-    excluir(autor) {
+    async excluir(autor) {
+      await axios.delete(`http://localhost:4000/autores/${autor.id}`);
       const indice = this.autores.indexOf(autor);
       this.autores.splice(indice, 1);
     },
@@ -46,7 +47,7 @@ export default {
       </thead>
       <tbody>
         <tr v-for="autor in autores" :key="autor.id">
-          <td>{{ autor.nomeautor }}</td>
+          <td>{{ autor.nome }}</td>
           <td>
             <button class="excluir" @click="excluir(autor)">Excluir</button>
           </td>

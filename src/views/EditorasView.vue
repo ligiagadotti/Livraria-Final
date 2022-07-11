@@ -1,29 +1,27 @@
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
-      editoras: [
-        {
-          nomeeditora: "Rocco",
-          site: "www.rocco.com",
-        },
-      ],
+      editoras: [],
       novo_nomeeditora: "",
       novo_site: "",
     };
   },
+    async created() {
+    const editoras = await axios.get("http://localhost:4000/editoras");
+    this.editoras = editoras.data;
+  },
   methods: {
-    salvar() {
-      if (this.novo_nomeeditora && this.novo_site !== "") {
-        this.editoras.push({
-          nomeeditora: this.novo_nomeeditora,
-          site: this.novo_site,
-        });
-        this.novo_nomeeditora = "";
-        this.novo_site = "";
-      }
+    async salvar() {
+      const editora = {
+        nome: this.novo_editora,
+      };
+      const editora_criado = await axios.post("http://localhost:4000/editoras", editora);
+      this.editoras.push(editora_criado.data);
     },
-    excluir(editora) {
+    async excluir(editora) {
+      await axios.delete(`http://localhost:4000/editoras/${editora.id}`);
       const indice = this.editoras.indexOf(editora);
       this.editoras.splice(indice, 1);
     },
